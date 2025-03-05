@@ -25,7 +25,7 @@ setup(
     ],
     include_packages_data=True,
     package_data={
-        'omnigui-parser': [
+        'omnigui_parser': [
             'weights/icon_detect/*',
             'weights/icon_caption/*',
         ],

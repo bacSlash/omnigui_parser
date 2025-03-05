@@ -9,10 +9,8 @@ from .utils import check_ocr_box, get_yolo_model, get_caption_model_processor, g
 # Set device for model
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-script_dir = os.path.dirname(os.abspath(__file__))
-
 # Initialize models
-ICON_DETECT_MODEL_PATH = os.path.join(script_dir, 'weights', 'icon_detect' , 'best.pt')
+ICON_DETECT_MODEL_PATH = 'weights/icon_detect/best.pt')
 ICON_CAPTION_MODEL_NAME = 'florence2'
 ICON_CAPTION_MODEL_PATH = 'microsoft/Florence-2-base'
 

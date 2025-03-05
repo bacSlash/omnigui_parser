@@ -81,7 +81,7 @@ def process_folder_cli():
     
     process_folder(args.folder_path, args.output_csv_path)
                     
-if __name__ == "__main__":
+def main():
     folder_path = select_folder()
     if folder_path:
         output_csv_path = os.path.join(folder_path, 'parsed_output.csv')
@@ -89,3 +89,6 @@ if __name__ == "__main__":
         print('All images processed. Results saved to', output_csv_path)
     else:
         print('No folder selected. Exiting.')
+
+if __name__ == "__main__":
+    main()

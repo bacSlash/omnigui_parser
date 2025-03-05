@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name='omnigui-parser',
+    name='omnigui_parser',
     version='0.1.0',
     packages=find_packages(),
     install_requires=[
@@ -25,15 +25,15 @@ setup(
     ],
     include_packages_data=True,
     package_data={
-        'omnigui-parser': [
+        'omnigui_parser': [
             'weights/icon_detect/*',
             'weights/icon_caption/*',
         ],
     },
     entry_points={
         'console_scripts': [
-            'video_extractor=omnigui-parser.video_extractor:main',
-            'multi_img_parser=omnigui-parser.multi_img_parser:main',
+            'video_extractor=omnigui_parser.video_extractor:main',
+            'multi_img_parser=omnigui_parser.multi_img_parser:main',
         ],
     },
 )

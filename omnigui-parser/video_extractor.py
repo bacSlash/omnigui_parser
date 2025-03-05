@@ -63,9 +63,13 @@ def save_frames_cli():
     save_frames(args.video_path, args.output_folder)
         
 # Use the GUI to select video file and output directory
-video_path = select_file()
-output_directory = select_output_folder()
-if video_path and output_directory:
-    save_frames(video_path, output_directory)
-else:
-    print("Operation Cancelled.")
+def main():
+    video_path = select_file()
+    output_directory = select_output_folder()
+    if video_path and output_directory:
+        save_frames(video_path, output_directory)
+    else:
+        print("Operation Cancelled.")
+
+if __name__ == "__main__":
+    main()

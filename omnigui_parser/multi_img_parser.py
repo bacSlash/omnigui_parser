@@ -7,7 +7,7 @@ import torch
 from .utils import check_ocr_box, get_yolo_model, get_caption_model_processor, get_som_labeled_img
 
 # Set device for model
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "CPU")
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 script_dir = os.path.dirname(os.abspath(__file__))
 

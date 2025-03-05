@@ -32,8 +32,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'video_extractor=omnigui-parser.video_extractor:main',
-            'multi_img_parser=omnigui-parser.multi_img_parser:main',
+            'video_extractor=omnigui_parser.video_extractor:main',
+            'multi_img_parser=omnigui_parser.multi_img_parser:main',
         ],
     },
 )

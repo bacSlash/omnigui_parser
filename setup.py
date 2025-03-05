@@ -19,7 +19,7 @@ setup(
         'dill',
         'accelerate',
         'timm',
-        'eionps==0.8.0',
+        'einops==0.8.0',
         'paddlepaddle',
         'paddleocr',
     ],

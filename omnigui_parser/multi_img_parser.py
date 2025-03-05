@@ -10,7 +10,7 @@ from .utils import check_ocr_box, get_yolo_model, get_caption_model_processor, g
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Initialize models
-ICON_DETECT_MODEL_PATH = 'weights/icon_detect/best.pt')
+ICON_DETECT_MODEL_PATH = 'weights/icon_detect/best.pt'
 ICON_CAPTION_MODEL_NAME = 'florence2'
 ICON_CAPTION_MODEL_PATH = 'microsoft/Florence-2-base'
 

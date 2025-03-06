@@ -27,8 +27,7 @@ setup(
     include_packages_data=True,
     package_data={
         'omnigui_parser': [
-            'weights/icon_detect/best.pt/*',
-            'weights/icon_caption/*',
+            'weights/icon_detect/*',
             'utils.py*',
         ],
     },

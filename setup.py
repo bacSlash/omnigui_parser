@@ -13,6 +13,7 @@ setup(
         'transformers',
         'ultralytics==8.3.70',
         'numpy==1.26.4',
+        'os',
         'openai',
         'opencv-python',
         'opencv-python-headless',

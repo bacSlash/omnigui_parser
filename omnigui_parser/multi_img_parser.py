@@ -4,7 +4,7 @@ from tkinter import filedialog, Tk
 import argparse
 from PIL import Image
 import torch
-from .utils import check_ocr_box, get_yolo_model, get_caption_model_processor, get_som_labeled_img
+from omnigui_parser.utils import check_ocr_box, get_yolo_model, get_caption_model_processor, get_som_labeled_img
 from pathlib import Path
 
 # Set device for model

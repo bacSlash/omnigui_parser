@@ -12,7 +12,7 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Function to search for the model in parent directories
 def find_model_path(model_filename='best.pt', search_folder='weights/icon_detect'):
-    current_dir = Path(__file__).resolve.parent # Start from the script directory
+    current_dir = Path(__file__).resolve().parent # Start from the script directory
     
     while current_dir !=current_dir.root: # Traverse upwards till root
         model_path = current_dir / search_folder / model_filename

@@ -352,7 +352,7 @@ def annotate(image_source: np.ndarray, boxes: torch.Tensor, logits: torch.Tensor
 
     labels = [f"{phrase}" for phrase in range(boxes.shape[0])]
 
-    from util.box_annotator import BoxAnnotator 
+    from omnigui_parser.util.box_annotator import BoxAnnotator 
     box_annotator = BoxAnnotator(text_scale=text_scale, text_padding=text_padding,text_thickness=text_thickness,thickness=thickness) # 0.8 for mobile/web, 0.3 for desktop # 0.4 for mind2web
     annotated_frame = image_source.copy()
     annotated_frame = box_annotator.annotate(scene=annotated_frame, detections=detections, labels=labels, image_size=(w,h))

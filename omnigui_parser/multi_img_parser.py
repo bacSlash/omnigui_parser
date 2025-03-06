@@ -5,12 +5,15 @@ import argparse
 from PIL import Image
 import torch
 from .utils import check_ocr_box, get_yolo_model, get_caption_model_processor, get_som_labeled_img
+from pathlib import Path
 
 # Set device for model
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+relative_model_path = Path('weights/icon_detect/best.pt')
+
 # Initialize models
-ICON_DETECT_MODEL_PATH = 'weights/icon_detect/best.pt'
+ICON_DETECT_MODEL_PATH = relative_model_path.resolve()
 ICON_CAPTION_MODEL_NAME = 'florence2'
 ICON_CAPTION_MODEL_PATH = 'microsoft/Florence-2-base'
 

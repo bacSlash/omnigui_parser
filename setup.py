@@ -30,6 +30,7 @@ setup(
         'omnigui_parser': [
             'weights/icon_detect/*',
             'utils.py*',
+            'util/*',
         ],
     },
     entry_points={

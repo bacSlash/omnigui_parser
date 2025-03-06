@@ -7,7 +7,7 @@ import torch
 from .utils import check_ocr_box, get_yolo_model, get_caption_model_processor, get_som_labeled_img
 
 # Set device for model
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "CPU")
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Initialize models
 ICON_DETECT_MODEL_PATH = 'weights/icon_detect/best.pt'

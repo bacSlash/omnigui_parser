@@ -18,4 +18,3 @@ paddleocr
 setuptools
 Pillow
 huggingface_hub
-os

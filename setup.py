@@ -29,7 +29,7 @@ setup(
         'omnigui_parser': [
             'weights/icon_detect/best.pt/*',
             'weights/icon_caption/*',
-            'setup.py*',
+            'utils.py*',
         ],
     },
     entry_points={

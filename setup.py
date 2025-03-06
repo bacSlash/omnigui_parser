@@ -23,6 +23,7 @@ setup(
         'einops==0.8.0',
         'paddlepaddle',
         'paddleocr',
+        'pathlib',
     ],
     include_packages_data=True,
     package_data={

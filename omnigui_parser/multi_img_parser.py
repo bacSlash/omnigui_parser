@@ -10,10 +10,20 @@ from pathlib import Path
 # Set device for model
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-relative_model_path = Path('weights/icon_detect/best.pt')
+# Function to search for the model in parent directories
+def find_model_path(model_filename='best.pt', search_folder='weights/icon_detect'):
+    current_dir = Path(__file__).resolve.parent # Start from the script directory
+    
+    while current_dir !=current_dir.root: # Traverse upwards till root
+        model_path = current_dir / search_folder / model_filename
+        if model_path.exists():
+            return str(model_path) # Return the absolute path if found
+        current_dir = current_dir.parent # Move one level up
+
+    raise FileNotFoundError(f"Model file '{model_filename}' not found in any parent directory.")
 
 # Initialize models
-ICON_DETECT_MODEL_PATH = relative_model_path.resolve()
+ICON_DETECT_MODEL_PATH = find_model_path()
 ICON_CAPTION_MODEL_NAME = 'florence2'
 ICON_CAPTION_MODEL_PATH = 'microsoft/Florence-2-base'
 

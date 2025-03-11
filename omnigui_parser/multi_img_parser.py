@@ -78,7 +78,7 @@ def process_image(image_path, previous_elements):
     
     structured_data = []
     for element in parsed_content_list:
-        bbox = element['box']
+        bbox = element['bbox']
         element_id = generate_element_id(bbox, element.get('content', ''))
         normalized_bbox = normalize_bbox(bbox, image_width, image_height)
         dominant_color = get_dominant_color(image_np, bbox)

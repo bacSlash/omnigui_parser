@@ -86,7 +86,12 @@ def get_dominant_color(image, bbox):
     Get the dominant color of the bounding box area
     """
     x1, y1, x2, y2 = map(int, bbox)
+    h, w, _ = image.shape
+    x1, x2 = max(0, min(w-1, x1)), max(0, min(w-1, x2))
+    y1, y2 = max(0, min(h-1, y1)), max(0, min(h-1, y2))
     cropped = image[y1:y2, x1:x2]
+    if cropped.size == 0:
+        return (0,0,0) # Black
     avg_color = np.mean(cropped, axis=(0, 1))
     return tuple(map(int, avg_color)) # Convert to RGB format
                         
@@ -600,3 +605,6 @@ def check_ocr_box(image_path, display_img = True, output_bb_format='xywh', goal_
             bb = [get_xyxy(item) for item in coord]
         # print('bounding box!!!', bb)
     return (text, bb), goal_filtering
+
+
+

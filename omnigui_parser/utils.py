@@ -57,6 +57,13 @@ def normalize_bbox(bbox, image_width, image_height):
     Convert absolute bounding box coordinated to normalized (cx, cy, w, h) format
     """
     
+    if bbox is None or not isinstance(bbox, list) or len(bbox) != 4:
+        print(f"WARNING: Invalid bbox detected -> {bbox}")
+        return [0.0, 0.0, 0.0, 0.0]
+    
+    if image_width == 0 or image_height == 0:
+        print(f"WARNING: Image dimensions are zero! width={image_width}, height={image_height}")
+    
     x1, y1, x2, y2 = bbox
     cx = (x1 + x2) / 2 / image_width
     cy = (y1 + y2) / 2 / image_height
@@ -70,6 +77,10 @@ def compute_iou(box1, box2):
     Compute Intersection over Union (IoU) between two bounding boxes
     """
     
+    if box1 is None or box2 is None or len(box1) !=4 or len(box2) != 4:
+        print(f"WARNING: Invalid bounding boxes for IoU computation -> {box1}, {box2}")
+        return 0.0
+    
     x1, y1, x2, y2 = (max(box1[0], box2[0]),
                         max(box1[1], box2[1]),
                         min(box1[2], box2[2]),
@@ -79,12 +90,19 @@ def compute_iou(box1, box2):
     box1_area = (box1[2] - box1[0]) * (box1[3] - box1[1])
     box2_area = (box2[2] - box2[0]) * (box2[3] - box2[1])
     union = box1_area + box2_area - intersection
+    if union == 0:
+        return 0.0
     return intersection / union if union > 0 else 0
 
 def get_dominant_color(image, bbox):
     """
     Get the dominant color of the bounding box area
     """
+    
+    if bbox is None or not isinstance(bbox, list) or len(bbox) != 4:
+        print(f"WARNING: Invalid bbox for dominant color -> {bbox}")
+        return (0, 0, 0)
+    
     x1, y1, x2, y2 = map(int, bbox)
     h, w, _ = image.shape
     x1, x2 = max(0, min(w-1, x1)), max(0, min(w-1, x2))

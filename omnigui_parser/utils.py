@@ -32,6 +32,8 @@ paddle_ocr = PaddleOCR(
 import time
 import base64
 
+import hashlib
+
 import os
 import ast
 import torch
@@ -42,6 +44,65 @@ from torchvision.transforms import ToPILImage
 import supervision as sv
 import torchvision.transforms as T
 
+def generate_element_id(bbox, content=''):
+    """
+    Generate a unique identifier for an element based on bounding box and content
+    """
+    
+    hash_input = f"{bbox} - {content}"
+    return hashlib.md5(hash_input.encode()).hexdigest()[:10] # Shortened ID
+
+def normalize_bbox(bbox, image_width, image_height):
+    """
+    Convert absolute bounding box coordinated to normalized (cx, cy, w, h) format
+    """
+    
+    x1, y1, x2, y2 = bbox
+    cx = (x1 + x2) / 2 / image_width
+    cy = (y1 + y2) / 2 / image_height
+    w = (x2 - x1) / image_width
+    h = (y2 - y1) / image_height
+    
+    return [cx, cy, w, h]
+
+def compute_iou(box1, box2):
+    """
+    Compute Intersection over Union (IoU) between two bounding boxes
+    """
+    
+    x1, y1, x2, y2 = (max(box1[0], box2[0]),
+                        max(box1[1], box2[1]),
+                        min(box1[2], box2[2]),
+                        min(box1[3], box2[3])
+    )
+    intersection = max(0, x2 -x1) * max(0, y2 - y1)
+    box1_area = (box1[2] - box1[0]) * (box1[3] - box1[1])
+    box2_area = (box2[2] - box2[0]) * (box2[3] - box2[1])
+    union = box1_area + box2_area - intersection
+    return intersection / union if union > 0 else 0
+
+def get_dominant_color(image, bbox):
+    """
+    Get the dominant color of the bounding box area
+    """
+    x1, y1, x2, y2 = map(int, bbox)
+    cropped = image[y1:y2, x1:x2]
+    avg_color = np.mean(cropped, axis=(0, 1))
+    return tuple(map(int, avg_color)) # Convert to RGB format
+                        
+def categorize_interactivity(element_type):
+    """
+    Define interaction categories based on element type
+    """                        
+    
+    if element_type == "text":
+        return "Text"
+    elif element_type == "icon":
+        return "Clickable"
+    elif element_type in ["button", "link"]:
+        return "Clickable"
+    else:
+        return "Static"
 
 def get_caption_model_processor(model_name, model_name_or_path="Salesforce/blip2-opt-2.7b", device=None):
     if not device:
@@ -352,7 +413,7 @@ def annotate(image_source: np.ndarray, boxes: torch.Tensor, logits: torch.Tensor
 
     labels = [f"{phrase}" for phrase in range(boxes.shape[0])]
 
-    from omnigui_parser.util.box_annotator import BoxAnnotator 
+    from util.box_annotator import BoxAnnotator 
     box_annotator = BoxAnnotator(text_scale=text_scale, text_padding=text_padding,text_thickness=text_thickness,thickness=thickness) # 0.8 for mobile/web, 0.3 for desktop # 0.4 for mind2web
     annotated_frame = image_source.copy()
     annotated_frame = box_annotator.annotate(scene=annotated_frame, detections=detections, labels=labels, image_size=(w,h))
@@ -539,6 +600,3 @@ def check_ocr_box(image_path, display_img = True, output_bb_format='xywh', goal_
             bb = [get_xyxy(item) for item in coord]
         # print('bounding box!!!', bb)
     return (text, bb), goal_filtering
-
-
-

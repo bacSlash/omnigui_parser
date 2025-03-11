@@ -15,6 +15,7 @@ from omnigui_parser.utils import (check_ocr_box,
                                   categorize_interactivity
 )
 from pathlib import Path
+import numpy as np
 
 # Set device for model
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")

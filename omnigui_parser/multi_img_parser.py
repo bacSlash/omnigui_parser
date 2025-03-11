@@ -79,11 +79,19 @@ def process_image(image_path, previous_elements):
     structured_data = []
     for element in parsed_content_list:
         bbox = element['bbox']
+        if bbox in None or any(np.isnan(bbox)):
+            continue # Skip if bbox is None or contains NaN values
+        bbox = [max(0, int(v)) for v in bbox] # Ensure bbox values are integers and >= 0
+        
         element_id = generate_element_id(bbox, element.get('content', ''))
         normalized_bbox = normalize_bbox(bbox, image_width, image_height)
         dominant_color = get_dominant_color(image_np, bbox)
         interactivity_type = categorize_interactivity(element['type'])
         ocr_confidence = element.get('ocr_confidence', None)
+        
+        # Ensure OCR Confidence is a float, otherwise set it to 0.0
+        if ocr_confidence is None or np.isnan(ocr_confidence):
+            ocr_confidence = 0.0
         
         # Compute IOU with previous element
         max_iou = 0

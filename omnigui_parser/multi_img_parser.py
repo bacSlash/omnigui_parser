@@ -76,10 +76,15 @@ def process_image(image_path, previous_elements):
         batch_size=icon_process_batch_size
     )
     
+    if not parsed_content_list:
+        print(f"WARNING: No elements detected in {image_path}")
+        return []
+    
     structured_data = []
     for element in parsed_content_list:
-        bbox = element['bbox']
-        if bbox in None or any(np.isnan(bbox)):
+        bbox = element.get('bbox', None)
+        if bbox in None or not isinstance(bbox, list) or any(np.isnan(bbox)):
+            print(f"WARNING: Skipping element with missing bbox in {image_path}")
             continue # Skip if bbox is None or contains NaN values
         bbox = [max(0, int(v)) for v in bbox] # Ensure bbox values are integers and >= 0
         
@@ -90,7 +95,7 @@ def process_image(image_path, previous_elements):
         ocr_confidence = element.get('ocr_confidence', None)
         
         # Ensure OCR Confidence is a float, otherwise set it to 0.0
-        if ocr_confidence is None or np.isnan(ocr_confidence):
+        if ocr_confidence is None or not isinstance(ocr_confidence, (float, int)) or np.isnan(ocr_confidence):
             ocr_confidence = 0.0
         
         # Compute IOU with previous element

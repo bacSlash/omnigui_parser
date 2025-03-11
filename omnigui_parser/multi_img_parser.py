@@ -4,7 +4,16 @@ from tkinter import filedialog, Tk
 import argparse
 from PIL import Image
 import torch
-from omnigui_parser.utils import check_ocr_box, get_yolo_model, get_caption_model_processor, get_som_labeled_img
+from omnigui_parser.utils import (check_ocr_box, 
+                                  get_yolo_model, 
+                                  get_caption_model_processor, 
+                                  get_som_labeled_img,
+                                  generate_element_id,
+                                  normalize_bbox,
+                                  compute_iou,
+                                  get_dominant_color,
+                                  categorize_interactivity
+)
 from pathlib import Path
 
 # Set device for model
@@ -31,13 +40,16 @@ ICON_CAPTION_MODEL_PATH = 'microsoft/Florence-2-base'
 yolo_model = get_yolo_model(ICON_DETECT_MODEL_PATH)
 caption_model_processor = get_caption_model_processor(ICON_CAPTION_MODEL_NAME, ICON_CAPTION_MODEL_PATH)
 
-def process_image(image_path):
+def process_image(image_path, previous_elements):
     image = Image.open(image_path)
     box_threshold = 0.05
     iou_threshold = 0.1
     use_paddleocr = False
     imgsz = 1920
     icon_process_batch_size = 64
+    
+    image_width, image_height = image.size
+    image_np = np.array(image)
     
     ocr_bbox_rslt, _ = check_ocr_box(
         image_path,
@@ -63,7 +75,36 @@ def process_image(image_path):
         batch_size=icon_process_batch_size
     )
     
-    return parsed_content_list
+    structured_data = []
+    for element in parsed_content_list:
+        bbox = element['box']
+        element_id = generate_element_id(bbox, element.get('content', ''))
+        normalized_bbox = normalize_bbox(bbox, image_width, image_height)
+        dominant_color = get_dominant_color(image_np, bbox)
+        interactivity_type = categorize_interactivity(element['type'])
+        ocr_confidence = element.get('ocr_confidence', None)
+        
+        # Compute IOU with previous element
+        max_iou = 0
+        for prev_element in previous_elements:
+            iou = compute_iou(bbox, prev_element['bbox'])
+            max_iou = max(max_iou, iou)
+            
+        structured_data.append({
+            "Image Name": os.path.basename(image_path),
+            "Element ID": element_id,
+            "Type": element['type'],
+            "Bounding Box": bbox,
+            "Normalized Bounding Box": normalized_bbox,
+            "Interactivity": element['interactivity'],
+            "Interaction Type": interactivity_type,
+            "Content": element.get('content', ''),
+            "OCR Confidence": ocr_confidence,
+            "IOU with Previous": max_iou,
+            "Dominant Color": dominant_color,
+        })
+    
+    return structured_data
 
 def select_folder():
     root = Tk()
@@ -72,22 +113,33 @@ def select_folder():
     return folder_path
 
 def process_folder(folder_path, output_csv_path):
-    headers_set = False # Track if headers are written
+    headers = ["Image Name", 
+                   "Element ID", 
+                   "Type", 
+                   "Bounding Box", 
+                   "Normalized Bounding Box", 
+                   "Interactivity", 
+                   "Interaction Type", 
+                   "Content", 
+                   "OCR Confidence", 
+                   "IOU with Previous", 
+                   "Dominant Color"
+    ]
+    
+    previous_elements = []
+    
     with open(output_csv_path, 'w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
+        writer = csv.DictWriter(file, fieldnames=headers)
+        writer.writeheader()
         
         for filename in os.listdir(folder_path):
             if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
                 image_path = os.path.join(folder_path, filename)
                 try:
-                    parsed_content = process_image(image_path)
-                    if not headers_set:
-                        headers = ['Image Name'] + [key for key in parsed_content[0].keys()]
-                        writer.writerow(headers)
-                        headers_set = True
-                    for item in parsed_content:
-                        writer.writerow([filename] + [item.get(key, '') for key in headers[1:]])
-                        print(f'Processed {filename}')
+                    parsed_data = process_image(image_path, previous_elements)
+                    previous_elements = parsed_data # Update for next image
+                    writer.writerows(parsed_data)
+                    print(f'Processed {filename}')
                 except Exception as e:
                     print(f'Failed to process {filename}: {str(e)}')
                     
